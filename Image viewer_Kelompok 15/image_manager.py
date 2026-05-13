@@ -5,29 +5,42 @@ import subprocess
 FILE_DB = "images.txt"
 
 # =========================
-# LOAD & SAVE (LOGIKA BARU)
+# LOAD & SAVE
 # =========================
 def load_images():
     if not os.path.exists(FILE_DB):
         open(FILE_DB, "w").close()
 
     data = []
-    with open(FILE_DB, "r") as file:
-        for line in file:
-            # Kita pakai pemisah "|" untuk membagi nama dan path
-            if "|" in line:
-                nama, path = line.strip().split("|")
-                data.append({"nama": nama, "path": path})
+    try:
+        with open(FILE_DB, "r") as file:
+            for line in file:
+                line = line.strip()
+                if not line:
+                    continue
+                
+                # Logika fleksibel: Bisa baca format Nama|Path atau format lama (hanya nama)
+                if "|" in line:
+                    nama, path = line.split("|")
+                    data.append({"nama": nama, "path": path})
+                else:
+                    # Jika data lama hanya berisi nama file, gunakan itu untuk keduanya
+                    data.append({"nama": line, "path": line})
+    except Exception as e:
+        print("Gagal memuat data:", e)
+        
     return data
 
 def save_images(images):
-    with open(FILE_DB, "w") as file:
-        for img in images:
-            # Simpan dengan format: Nama|Path
-            file.write(f"{img['nama']}|{img['path']}\n")
+    try:
+        with open(FILE_DB, "w") as file:
+            for img in images:
+                file.write(f"{img['nama']}|{img['path']}\n")
+    except Exception as e:
+        print("Gagal menyimpan data:", e)
 
 # =========================
-# CRUD (DENGAN TAMPILAN TABEL)
+# CRUD
 # =========================
 def tambah_gambar(images):
     print("\n--- Tambah Gambar Baru ---")
@@ -37,42 +50,42 @@ def tambah_gambar(images):
     if os.path.exists(path):
         images.append({"nama": nama, "path": path})
         save_images(images)
-        print("Berhasil disimpan ke tabel!")
+        print("Data berhasil disimpan.")
     else:
-        print("File tidak ditemukan! Pastikan file ada di folder yang sama.")
+        print("File fisik tidak ditemukan. Pastikan file ada di folder yang sama.")
 
 def lihat_gambar(images):
     if not images:
         print("\n[ Galeri masih kosong ]")
         return
 
-    # TAMPILAN TABEL
-    print("\n" + "="*60)
-    print(f"{'ID':<4} | {'NAMA GAMBAR':<25} | {'PATH FILE':<25}")
-    print("-" * 60)
+    # Tampilan Tabel Manusiawi
+    print("\n" + "="*70)
+    print(f"{'ID':<4} | {'NAMA GAMBAR':<30} | {'PATH FILE':<30}")
+    print("-" * 70)
     for i, img in enumerate(images):
-        print(f"{i:<4} | {img['nama']:<25} | {img['path']:<25}")
-    print("="*60)
+        print(f"{i:<4} | {img['nama']:<30} | {img['path']:<30}")
+    print("="*70)
 
 def update_gambar(images):
     lihat_gambar(images)
     try:
         idx = int(input("\nPilih ID yang mau diubah: "))
         if 0 <= idx < len(images):
-            print(f"Mengubah: {images[idx]['nama']}")
+            print(f"Mengubah data: {images[idx]['nama']}")
             nama_baru = input("Nama baru: ")
             path_baru = input("Path baru: ")
 
             if os.path.exists(path_baru):
                 images[idx] = {"nama": nama_baru, "path": path_baru}
                 save_images(images)
-                print("Data diperbarui!")
+                print("Data berhasil diperbarui.")
             else:
-                print("File tidak ditemukan!")
+                print("File tidak ditemukan.")
         else:
-            print("ID salah!")
+            print("ID tidak valid.")
     except ValueError:
-        print("Input harus angka!")
+        print("Input harus berupa angka.")
 
 def hapus_gambar(images):
     lihat_gambar(images)
@@ -81,11 +94,11 @@ def hapus_gambar(images):
         if 0 <= idx < len(images):
             deleted = images.pop(idx)
             save_images(images)
-            print(f"🗑️ '{deleted['nama']}' dihapus.")
+            print(f"Data '{deleted['nama']}' telah dihapus.")
         else:
-            print("ID tidak ditemukan!")
+            print("ID tidak ditemukan.")
     except ValueError:
-        print("Input harus angka!")
+        print("Input harus berupa angka.")
 
 # =========================
 # OPEN & VIEWER
@@ -97,19 +110,17 @@ def buka_gambar(path):
         elif os.name == "posix": # Linux/Mac
             subprocess.run(["xdg-open", path])
     except Exception as e:
-        print("Gagal membuka file:", e)
+        print(f"Gagal membuka file '{path}': {e}")
 
 def viewer(images):
     if not images:
-        print("Galeri kosong!")
+        print("Galeri kosong.")
         return
 
     index = 0
     while True:
         current = images[index]
         print(f"\n>>> Menampilkan: {current['nama']} ({index+1}/{len(images)})")
-        
-        # Buka gambarnya beneran
         buka_gambar(current['path'])
 
         pilih = input("[N] Next | [P] Prev | [Q] Keluar Viewer: ").lower()
@@ -126,7 +137,7 @@ def viewer(images):
 def main():
     images = load_images()
     while True:
-        print("\nIMAGE REVIEWER")
+        print("\n--- SISTEM MANAJEMEN GAMBAR ---")
         print("1. Lihat Tabel Gambar")
         print("2. Tambah Data")
         print("3. Update Data")
@@ -140,8 +151,11 @@ def main():
         elif pilih == "3": update_gambar(images)
         elif pilih == "4": hapus_gambar(images)
         elif pilih == "5": viewer(images)
-        elif pilih == "6": break
-        else: print("Pilihan salah!")
+        elif pilih == "6": 
+            print("Program selesai.")
+            break
+        else: 
+            print("Pilihan tidak valid.")
 
 if __name__ == "__main__":
     main()
