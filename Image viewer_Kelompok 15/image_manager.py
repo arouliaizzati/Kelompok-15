@@ -9,7 +9,7 @@ FILE_DB = "images.txt"
 # =========================
 def load_images():
     if not os.path.exists(FILE_DB):
-        open(FILE_DB, "w").close()v
+        open(FILE_DB, "w").close()
 
     data = []
     with open(FILE_DB, "r") as file:
