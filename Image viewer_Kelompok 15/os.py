@@ -1,11 +1,13 @@
 import os
 import subprocess
 
+# Nama file untuk menyimpan data gambar
 FILE_DB = "images.txt"
 
 # =========================
 # LOAD & SAVE
 # =========================
+# Fungsi untuk membaca data gambar dari file TXT
 def load_images():
     if not os.path.exists(FILE_DB):
         open(FILE_DB, "w").close()
