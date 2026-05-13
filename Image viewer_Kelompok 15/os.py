@@ -1,197 +1,147 @@
 import os
 import subprocess
 
-# Nama file untuk menyimpan data gambar
+# Nama file database
 FILE_DB = "images.txt"
 
 # =========================
-# LOAD & SAVE
+# LOAD & SAVE (LOGIKA BARU)
 # =========================
-# Fungsi untuk membaca data gambar dari file TXT
 def load_images():
-    # Jika file belum ada, program akan membuat file baru
     if not os.path.exists(FILE_DB):
-        open(FILE_DB, "w").close()
+        open(FILE_DB, "w").close()v
 
-    # Membaca isi file lalu mengubahnya menjadi list
+    data = []
     with open(FILE_DB, "r") as file:
-        return file.read().splitlines()
+        for line in file:
+            # Kita pakai pemisah "|" untuk membagi nama dan path
+            if "|" in line:
+                nama, path = line.strip().split("|")
+                data.append({"nama": nama, "path": path})
+    return data
 
-# Fungsi untuk menyimpan data gambar ke file TXT
 def save_images(images):
     with open(FILE_DB, "w") as file:
         for img in images:
-            file.write(img + "\n")
+            # Simpan dengan format: Nama|Path
+            file.write(f"{img['nama']}|{img['path']}\n")
 
 # =========================
-# CRUD
+# CRUD (DENGAN TAMPILAN TABEL)
 # =========================
-# Fungsi menambah gambar
 def tambah_gambar(images):
-    path = input("Masukkan path gambar: ")
+    print("\n--- Tambah Gambar Baru ---")
+    nama = input("Masukkan Nama/Label Gambar: ")
+    path = input("Masukkan Path/Nama File (misal: langit.jpg): ")
 
-    # Mengecek apakah file gambar ada
     if os.path.exists(path):
-        images.append(path)     # Menambahkan gambar ke list
-        save_images(images)     # Menyimpan perubahan ke file
-        print("Gambar berhasil ditambahkan!")
+        images.append({"nama": nama, "path": path})
+        save_images(images)
+        print("Berhasil disimpan ke tabel!")
     else:
-        print("File tidak ditemukan!")
+        print("File tidak ditemukan! Pastikan file ada di folder yang sama.")
 
-# Fungsi melihat daftar gambar
 def lihat_gambar(images):
     if not images:
-        print("Belum ada gambar.")
+        print("\n[ Galeri masih kosong ]")
         return
 
-    # Menampilkan semua gambar beserta indexnya
-    print("\n=== DAFTAR GAMBAR ===")
+    # TAMPILAN TABEL
+    print("\n" + "="*60)
+    print(f"{'ID':<4} | {'NAMA GAMBAR':<25} | {'PATH FILE':<25}")
+    print("-" * 60)
     for i, img in enumerate(images):
-        print(f"[{i}] {img}")
+        print(f"{i:<4} | {img['nama']:<25} | {img['path']:<25}")
+    print("="*60)
 
-# Fungsi mengubah data gambar
 def update_gambar(images):
     lihat_gambar(images)
-
     try:
-        idx = int(input("Pilih index: "))
-
+        idx = int(input("\nPilih ID yang mau diubah: "))
         if 0 <= idx < len(images):
-            baru = input("Path baru: ")
+            print(f"Mengubah: {images[idx]['nama']}")
+            nama_baru = input("Nama baru: ")
+            path_baru = input("Path baru: ")
 
-            # Mengecek apakah file baru ada
-            if os.path.exists(baru):
-                images[idx] = baru
+            if os.path.exists(path_baru):
+                images[idx] = {"nama": nama_baru, "path": path_baru}
                 save_images(images)
-                print("Berhasil diupdate!")
+                print("Data diperbarui!")
             else:
                 print("File tidak ditemukan!")
         else:
-            print("Index salah!")
-
-    # Validasi jika input bukan angka
+            print("ID salah!")
     except ValueError:
-        print("Harus angka!")
+        print("Input harus angka!")
 
-# Fungsi menghapus gambar
 def hapus_gambar(images):
     lihat_gambar(images)
-
     try:
-        idx = int(input("Pilih index: "))
-
-        if 0 <= idx < len(images):       # Mengecek index valid
-            deleted = images.pop(idx)    # Menghapus gambar dari list
+        idx = int(input("\nPilih ID yang mau dihapus: "))
+        if 0 <= idx < len(images):
+            deleted = images.pop(idx)
             save_images(images)
-            print(f"{deleted} dihapus.")
+            print(f"🗑️ '{deleted['nama']}' dihapus.")
         else:
-            print("Index salah!")
-
+            print("ID tidak ditemukan!")
     except ValueError:
-        print("Harus angka!")
+        print("Input harus angka!")
 
 # =========================
-# OPEN IMAGE
+# OPEN & VIEWER
 # =========================
-# Fungsi untuk membuka gambar langsung dari komputer
 def buka_gambar(path):
     try:
-        # Untuk Windows
-        if os.name == "nt":
+        if os.name == "nt": # Windows
             os.startfile(path)
-
-        # Untuk Linux
-        elif os.name == "posix":
+        elif os.name == "posix": # Linux/Mac
             subprocess.run(["xdg-open", path])
-
-        else:
-            print("OS tidak didukung.")
-
     except Exception as e:
-        print("Gagal membuka gambar:", e)
+        print("Gagal membuka file:", e)
 
-# =========================
-# VIEWER
-# =========================
-# Fungsi viewer untuk next dan previous gambar
 def viewer(images):
-    # Jika list kosong
     if not images:
-        print("Tidak ada gambar!")
+        print("Galeri kosong!")
         return
 
-    # Mulai dari gambar pertama
     index = 0
-
     while True:
         current = images[index]
+        print(f"\n>>> Menampilkan: {current['nama']} ({index+1}/{len(images)})")
+        
+        # Buka gambarnya beneran
+        buka_gambar(current['path'])
 
-        print("\n===================")
-        print(f"Gambar ke-{index+1}/{len(images)}")
-        print(current)
-        print("===================")
-
-        # Membuka gambar
-        buka_gambar(current)
-
-        # Input pilihan user
-        pilih = input("[N] Next | [P] Prev | [Q] Quit : ").lower()
-
-        # Next gambar
+        pilih = input("[N] Next | [P] Prev | [Q] Keluar Viewer: ").lower()
         if pilih == "n":
             index = (index + 1) % len(images)
-
-        # Previous gambar
         elif pilih == "p":
             index = (index - 1) % len(images)
-
-        # Keluar viewer
         elif pilih == "q":
             break
 
-        else:
-            print("Input salah!")
-
 # =========================
-# MAIN
+# MAIN MENU
 # =========================
 def main():
-    # Load data gambar dari file
     images = load_images()
-
     while True:
-        print("\n====== IMAGE REVIEWER ======")
-        print("1. Lihat Data")
-        print("2. Tambah Gambar")
-        print("3. Update Gambar")
-        print("4. Hapus Gambar")
-        print("5. Viewer")
+        print("\nIMAGE REVIEWER")
+        print("1. Lihat Tabel Gambar")
+        print("2. Tambah Data")
+        print("3. Update Data")
+        print("4. Hapus Data")
+        print("5. Jalankan Viewer")
         print("6. Keluar")
 
         pilih = input("Pilih menu: ")
+        if pilih == "1": lihat_gambar(images)
+        elif pilih == "2": tambah_gambar(images)
+        elif pilih == "3": update_gambar(images)
+        elif pilih == "4": hapus_gambar(images)
+        elif pilih == "5": viewer(images)
+        elif pilih == "6": break
+        else: print("Pilihan salah!")
 
-        # Menjalankan menu sesuai pilihan user
-        if pilih == "1":
-            lihat_gambar(images)
-
-        elif pilih == "2":
-            tambah_gambar(images)
-
-        elif pilih == "3":
-            update_gambar(images)
-
-        elif pilih == "4":
-            hapus_gambar(images)
-
-        elif pilih == "5":
-            viewer(images)
-
-        elif pilih == "6":
-            print("Program selesai.")
-            break
-
-        else:
-            print("Menu tidak valid!")
-
-# Menjalankan program utama
-main()
+if __name__ == "__main__":
+    main()
