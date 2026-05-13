@@ -1,3 +1,4 @@
+# fyft
 def load_images():
     try:
         with open("images.txt", "r") as file:
