@@ -9,12 +9,15 @@ FILE_DB = "images.txt"
 # =========================
 # Fungsi untuk membaca data gambar dari file TXT
 def load_images():
+    # Jika file belum ada, program akan membuat file baru
     if not os.path.exists(FILE_DB):
         open(FILE_DB, "w").close()
 
+    # Membaca isi file lalu mengubahnya menjadi list
     with open(FILE_DB, "r") as file:
         return file.read().splitlines()
 
+# Fungsi untuk menyimpan data gambar ke file TXT
 def save_images(images):
     with open(FILE_DB, "w") as file:
         for img in images:
@@ -23,25 +26,30 @@ def save_images(images):
 # =========================
 # CRUD
 # =========================
+# Fungsi menambah gambar
 def tambah_gambar(images):
     path = input("Masukkan path gambar: ")
 
+    # Mengecek apakah file gambar ada
     if os.path.exists(path):
-        images.append(path)
-        save_images(images)
+        images.append(path)     # Menambahkan gambar ke list
+        save_images(images)     # Menyimpan perubahan ke file
         print("Gambar berhasil ditambahkan!")
     else:
         print("File tidak ditemukan!")
 
+# Fungsi melihat daftar gambar
 def lihat_gambar(images):
     if not images:
         print("Belum ada gambar.")
         return
 
+    # Menampilkan semua gambar beserta indexnya
     print("\n=== DAFTAR GAMBAR ===")
     for i, img in enumerate(images):
         print(f"[{i}] {img}")
 
+# Fungsi mengubah data gambar
 def update_gambar(images):
     lihat_gambar(images)
 
@@ -51,6 +59,7 @@ def update_gambar(images):
         if 0 <= idx < len(images):
             baru = input("Path baru: ")
 
+            # Mengecek apakah file baru ada
             if os.path.exists(baru):
                 images[idx] = baru
                 save_images(images)
@@ -60,17 +69,19 @@ def update_gambar(images):
         else:
             print("Index salah!")
 
+    # Validasi jika input bukan angka
     except ValueError:
         print("Harus angka!")
 
+# Fungsi menghapus gambar
 def hapus_gambar(images):
     lihat_gambar(images)
 
     try:
         idx = int(input("Pilih index: "))
 
-        if 0 <= idx < len(images):
-            deleted = images.pop(idx)
+        if 0 <= idx < len(images):       # Mengecek index valid
+            deleted = images.pop(idx)    # Menghapus gambar dari list
             save_images(images)
             print(f"{deleted} dihapus.")
         else:
@@ -82,11 +93,14 @@ def hapus_gambar(images):
 # =========================
 # OPEN IMAGE
 # =========================
+# Fungsi untuk membuka gambar langsung dari komputer
 def buka_gambar(path):
     try:
+        # Untuk Windows
         if os.name == "nt":
             os.startfile(path)
 
+        # Untuk Linux
         elif os.name == "posix":
             subprocess.run(["xdg-open", path])
 
@@ -99,11 +113,14 @@ def buka_gambar(path):
 # =========================
 # VIEWER
 # =========================
+# Fungsi viewer untuk next dan previous gambar
 def viewer(images):
+    # Jika list kosong
     if not images:
         print("Tidak ada gambar!")
         return
 
+    # Mulai dari gambar pertama
     index = 0
 
     while True:
@@ -114,16 +131,21 @@ def viewer(images):
         print(current)
         print("===================")
 
+        # Membuka gambar
         buka_gambar(current)
 
+        # Input pilihan user
         pilih = input("[N] Next | [P] Prev | [Q] Quit : ").lower()
 
+        # Next gambar
         if pilih == "n":
             index = (index + 1) % len(images)
 
+        # Previous gambar
         elif pilih == "p":
             index = (index - 1) % len(images)
 
+        # Keluar viewer
         elif pilih == "q":
             break
 
@@ -134,6 +156,7 @@ def viewer(images):
 # MAIN
 # =========================
 def main():
+    # Load data gambar dari file
     images = load_images()
 
     while True:
@@ -147,6 +170,7 @@ def main():
 
         pilih = input("Pilih menu: ")
 
+        # Menjalankan menu sesuai pilihan user
         if pilih == "1":
             lihat_gambar(images)
 
@@ -169,4 +193,5 @@ def main():
         else:
             print("Menu tidak valid!")
 
+# Menjalankan program utama
 main()
