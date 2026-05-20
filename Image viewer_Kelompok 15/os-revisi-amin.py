@@ -5,7 +5,7 @@ import subprocess
 # KONFIGURASI
 # ============================================================
 FILE_DB      = "images.txt"
-DEFAULT_PATH = "C:\\images"
+DEFAULT_PATH = "C:\\image"
 
 # ============================================================
 # STRUKTUR DATA: NODE

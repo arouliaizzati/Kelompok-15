@@ -1,1 +1,2 @@
 1|A.png|C:\image\A.png
+2|B.png|C:\image\B.png
