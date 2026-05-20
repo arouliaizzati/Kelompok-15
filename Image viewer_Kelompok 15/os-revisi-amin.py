@@ -342,6 +342,11 @@ def main():
     load_images(dll)
 
     while True:
+        print("\n======================================")
+        print("  SELAMAT DATANG DI IMAGE REVIEWER ")
+        print(" Sistem Pengelolaan & Viewer Gambar ")
+        print("======================================")
+
         print("\n====== IMAGE REVIEWER ======")
         print("  1. Lihat Data")
         print("  2. Tambah Gambar")
