@@ -848,6 +848,10 @@ def main():
     while True:
 
         # Tampilkan menu utama
+        print("\n======================================")
+        print("  SELAMAT DATANG DI IMAGE REVIEWER ")
+        print(" Sistem Pengelolaan & Viewer Gambar ")
+        print("======================================")
         print("\n" + "=" * 40)
         print("   IMAGE REVIEWER ")
         print("=" * 40)
