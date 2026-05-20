@@ -855,7 +855,7 @@ def main():
         print("\n" + "=" * 40)
         print("   IMAGE REVIEWER ")
         print("=" * 40)
-        print("  1. Lihat Semua Gambar")
+        print("  1. Lihat List gambar")
         print("  2. Tambah Gambar")
         print("  3. Update Gambar")
         print("  4. Hapus Gambar")
