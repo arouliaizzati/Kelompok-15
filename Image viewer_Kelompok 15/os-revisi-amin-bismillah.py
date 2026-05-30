@@ -385,7 +385,7 @@ def main():
         print(Fore.GREEN + garis("=") + Style.RESET_ALL)
 
         panel([
-            "MENU UTAMA",
+            "MENU UTAMA".center(68),
             "",
             "1. Lihat Data",
             "2. Tambah Gambar",
