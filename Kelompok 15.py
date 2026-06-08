@@ -1,6 +1,4 @@
 from colorama import Fore, Style
-from tabulate import tabulate
-from pyfiglet import Figlet
 
 import os
 import subprocess
@@ -874,20 +872,20 @@ def hapus_gambar(dll):
 # Fungsi utama program - menu utama
 # ============================================================
 
-def tampil_banner (teks, warna=Fore.CYAN):
-    """Tampilkan ASCII art banner Image Viewer."""
-    LEBAR_FRAME = 72
-    print(warna + garis("=") + Style.RESET_ALL)
-    print(warna + teks.center(LEBAR_FRAME) + Style.RESET_ALL)
-    print(warna + garis("=") + Style.RESET_ALL)
-    print(Fore.GREEN + "Sistem Pengelolaan & Viewer Gambar".center(LEBAR_FRAME) + Style.RESET_ALL)
+def tampil_banner():
+    """Tampilkan banner elegan tanpa ASCII art yang terlalu mencolok."""
+    print()
+    print(Fore.CYAN  + "  " + garis("-", LEBAR_FRAME - 2) + Style.RESET_ALL)
+    print(Fore.WHITE + ("  [ IMAGE VIEWER ]").center(LEBAR_FRAME) + Style.RESET_ALL)
+    print(Fore.CYAN  + ("Sistem Pengelolaan & Viewer Gambar").center(LEBAR_FRAME) + Style.RESET_ALL)
+    print(Fore.CYAN  + "  " + garis("-", LEBAR_FRAME - 2) + Style.RESET_ALL)
+    print()
 
 
 def tampil_menu_utama():
     """Clear screen lalu tampilkan banner + menu utama."""
     clear_screen()
     tampil_banner()
-    print(Fore.CYAN + garis("=") + Style.RESET_ALL)
     panel([
         "MENU UTAMA",
     ], Fore.CYAN)
